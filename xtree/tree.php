@@ -58,7 +58,7 @@ if($d == '0')
 	$i=1;
 	foreach($dirs_arr as $dir)
 	{
-		$dir=iconv("GB2312","UTF-8",$dir);
+		// $dir=iconv("GB2312","UTF-8",$dir);
 		if($dir{strlen($dir)-1}=='/')
 		{
 			$dir_utf=urlencode($dir);

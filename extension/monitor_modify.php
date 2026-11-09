@@ -9,7 +9,7 @@ error_reporting(0);
    输出：
    逻辑：
 */
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 $id=$_GET['id'];
 $action=$_GET['action'];

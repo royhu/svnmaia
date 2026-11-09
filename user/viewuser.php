@@ -11,8 +11,10 @@ Date:2009-02-19
 <html>
 <head>
   <title>svn用户管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 a{position:relative;}
 .title{background: #007ED1 url(../img/bg.png)  100% 100%;font-size:11pt;color:white;}
@@ -29,6 +31,8 @@ ul, li{
 .es { font-size: 75%; float:right;text-decoration:none;}
 .tb1{ cellspacing:1; cellpadding:0; width:70%; border:0; background:#aaa}
 .tb1 tr{background:#ecf0e1;}
+.btn-new{background:#1a9c3d;color:#fff;border:1px solid #147a2f;border-radius:4px;font-weight:bold;cursor:pointer;padding:0 16px;height:34px;margin-left:8px;font-size:10pt;}
+.btn-new:hover{background:#22b34a;}
 #page {margin:3.5em 0 0 12.9707em;*margin:2em 0 0 12.6606em;}
 #page a, b { border:1px solid #ddd; text-decoration:none; padding:.25em .55em; *padding:.3em .55em; margin-right:.5em;zoom:1; font-size:107%;}
  b { border:1px solid #fff; color:#000; font-weight:bold;}
@@ -40,19 +44,19 @@ ul, li{
 <body>
 	
 	<h2><a href="./user_modify.php?userArray[]=<?php echo $_SESSION['uid'] ?>&action=编辑" class="es">【编辑个人信息】</a>svn用户管理</h2><p>&nbsp;</p><p>
-	   <form name='searchform' method="get" action="">
-	   svn用户名查询：<input type="text" name="username" size="20" ><input type=submit value="搜索" onclick="return tCheck();">
+	   <form name='searchform' method="get" action="" class='sform'>
+	   svn用户名查询：<input type="search" name="username" size="20" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="search" value="<?php echo htmlspecialchars(isset($_GET['username'])?$_GET['username']:'',ENT_QUOTES);?>" ><input type=submit value="搜索" onclick="return tCheck();"><button type="button" class="btn-new" onclick="document.location.href='reg_user.php'">+ 新建用户</button>
 	   </form>
 </p>
 <?php
- 
-include('../../../config.inc');
+
+include('../config.inc');
 include('../include/dbconnect.php');
 
 if(! empty($_GET['username'])){
   $un=mysql_real_escape_string($_GET['username']);
   if(empty($un))$un='no_such_user';
-  $query='select user_id,user_name,full_name,staff_no,department,email,fresh from svnauth_user where user_name like \'%'.$un.'%\' or full_name like \'%'.$un.'%\'';
+  $query='select user_id,user_name,full_name,staff_no,department,email from svnauth_user where user_name like \'%'.$un.'%\' or full_name like \'%'.$un.'%\'';
   $result=mysql_query($query);
   echo "<table class='tb1'>";
   $found=false;
@@ -73,11 +77,15 @@ if(! empty($_GET['username'])){
 		}
 		$str='';
 		$found=true;
+		//删除后带回搜索关键字重新搜索
+		$kw=urlencode($_GET['username']);
 		if ($_SESSION['role']=="admin")
-		  $str="<td><a href='user_modify.php?userArray[]={$user_id}&action=删除' onclick=\"return confirm('确实要删除用户吗?');\">删除</a></td>
+		  $str="<td><a href='user_modify.php?userArray[]={$user_id}&action=删除&kw={$kw}' onclick=\"return confirm('确实要删除用户吗?');\">删除</a></td>
 		<td><a href='user_modify.php?userArray[]={$user_id}&action={$st}' onclick=\"return confirm('确实要{$st}用户吗?');\">{$st}</a></td>
-		  <td><a href='user_modify.php?userArray[]={$user_id}&action=编辑'>编辑</a></td><td><a href=\"../priv/viewpriv.php?u=$user_id\" onmouseover=\"showTip('$user_id',this);\" onmouseout=\"hideTip()\">权限详情</a></td>";
-		if($_SESSION['username']==$user_name)$str="<td><a href='user_modify.php?userArray[]=myself&action=编辑'>编辑</a></td><td><a href=\"../priv/viewpriv.php?u=$user_id\" onmouseover=\"showTip('$user_id',this);\" onmouseout=\"hideTip()\">权限详情</a></td>";
+		  <td><a href='user_modify.php?userArray[]={$user_id}&action=编辑'>编辑</a></td><td><a href=\"../priv/viewpriv.php?u=$user_id\" onmouseover=\"showTip('$user_id',this);\" onmouseout=\"hideTip()\">权限详情</a></td>
+		  <td><a href='../extension/pwdhelp.php?u={$user_id}'>修改密码</a></td>";
+		if($_SESSION['username']==$user_name)$str="<td><a href='user_modify.php?userArray[]=myself&action=编辑'>编辑</a></td><td><a href=\"../priv/viewpriv.php?u=$user_id\" onmouseover=\"showTip('$user_id',this);\" onmouseout=\"hideTip()\">权限详情</a></td>
+		  <td><a href='../extension/pwdhelp.php?u={$user_id}'>修改密码</a></td>";
 		echo "<tr><td>$user_name</td><td>$full_name</td><td>$staff_no</td><td>$department</td><td>$email</td>$str</tr>";
   }
   if(!$found)echo "<tr><td>&nbsp;&nbsp;&nbsp;<font color=red size=2>结果为空!</font></td></tr>";
@@ -93,7 +101,7 @@ if($_SESSION['role'] != "admin")
 <br><a href='../extension/pwdhelp.php'>修改密码</a>
 <br>&nbsp;
 <h3>权限管理</h3>
-<br><a href='../extension/autopriv/rtpriv.php'>权限申请</a>
+<br><a href='../extension/autopriv/rtpriv.php'>权限申请</a><a style="color:#FF0000 ;">*请先在权限管理页面浏览所在项目，申请具体svn URL目录权限，或者在组管理中找到自己需要加入的项目-角色组，申请加入该组，申请均以邮件通知管理员和你，务必登记企业邮箱.</a>
 <br><a href="../priv/viewpriv.php?u={$_SESSION['uid']}">权限查询</a>
 <br>&nbsp;
 <h3>其他</h3>
@@ -213,8 +221,8 @@ if(!is_numeric($page))
 	//管理按钮
 	$ii=mysql_num_rows($result);
 	echo  <<<SCMBBS
-	<form method="post" action="user_modify.php" name='userform' onsubmit="return fCheck($ii)">	
-		<table>
+	<form method="post" action="user_modify.php" name='userform' onsubmit="return fCheck($ii)">
+		<table class='toolbar'>
 	   <tr>
 	  <td width="40"></td>
 		<td><input name="action" type=submit value="删除" onclick="return confirm('确实要删除这些用户吗?');"></td>
@@ -254,7 +262,7 @@ $i=0;
 		
 	}
 	echo <<<HTML
-	</table><table>	
+	</table><table class='toolbar'>
 	   <tr class='subtitle'>
 	  <td width="40"></td>
 		<td><input name="action" type=submit value="删除" onclick="return confirm('确实要删除这些用户吗?');"></td>

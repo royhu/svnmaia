@@ -10,7 +10,7 @@ if ($_SESSION['role'] !='admin')
 	echo "您无权进行此操作！";
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 if (mysql_select_db(DBNAME))
 {
@@ -147,6 +147,8 @@ br{clear:both;}
 .err{color:red;}
 </style>
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script language="javascript">
 <!--
 	var valueChanged=0;

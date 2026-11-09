@@ -14,7 +14,7 @@ $ss=str_replace(" ","",$ss);
 $ss=str_replace("0.","",$ss);
 $salt=mt_rand();
 $addr=$_SERVER['REMOTE_ADDR'];
-include('../../../config.inc');
+include('../config.inc');
 $sig=md5($ss.SECRET_KEY.$addr);
 @header("Location:../user/accounts/pwdhelp.php?ss=$ss&sig=$sig&salt=$salt");
 echo "<script>setTimeout('document.location.href=\"../user/accounts/pwdhelp.php?ss=$ss&sig=$sig&salt=$salt\"',0)</script>";

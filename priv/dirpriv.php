@@ -14,7 +14,7 @@ if(file_exists('../config/config.php'))
 {
 	echo "window.alert('请先进行系统设置!')";
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 include('../include/dbconnect.php');
 function checkurl($t_url)
@@ -273,7 +273,7 @@ while($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$cur_group[$group]=$permission;
 }
 //所有组
-$query="select group_id,group_name from svnauth_group";
+$query="select group_id,group_name from svnauth_group order by ".groupOrderSql();
 $result = mysql_query($query);
 $g_candidate_array=array();
 $g_candidate='';

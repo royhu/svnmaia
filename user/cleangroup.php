@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("../include/charset.php");
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 if( $_SESSION['role'] !="admin")
 {
@@ -22,6 +22,8 @@ if(!empty($_POST['gArray']))
 	}
 }
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 .title{background: #007ED1 url(../img/bg.png)  100% 100%;font-size:11pt;color:white;}
 .subtitle{background: #007ED1;color:white;}
@@ -30,8 +32,8 @@ if(!empty($_POST['gArray']))
 .detail{width:680px}
 </style>
 <strong>说明：</strong>下面列出了成员为空的空权限组，过多的权限组将影响性能，建议您删掉冗余组。
-<form method="post" action="" name='dirform' onsubmit="return fCheck()">	
-	<table class='subtitle'>
+<form method="post" action="" name='dirform' onsubmit="return fCheck()">
+	<table class='subtitle toolbar'>
 	   <tr>
 	  <td><input type=button value='全选' onclick="selall()"/></td><td width=280>&nbsp;</td><td>操作:<input name="action" type='submit' value='删除' onclick="return confirm('将删除该空组，你确认吗？');"/></td>
 	   </tr>

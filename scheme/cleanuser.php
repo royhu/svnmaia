@@ -13,7 +13,9 @@ if ($_SESSION['role'] !='admin')
 }
 
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 .title{background: #007ED1 url(../img/bg.png)  100% 100%;font-size:11pt;color:white;}
 .subtitle{background: #007ED1;color:white;}
@@ -91,7 +93,7 @@ function selall(ii)
 -->
 </script>
 <?php
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 $para='';
 $user=trim(mysql_real_escape_string($_GET['username']));

@@ -14,10 +14,12 @@ if(file_exists('../config/config.php'))
 {
 	echo "window.alert('请先进行系统设置!')";
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 include('../include/dbconnect.php');
+echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 echo "<link rel=\"stylesheet\" href=\"../css/base.css\" type=\"text/css\">";
+echo "<link rel=\"stylesheet\" href=\"../css/mobile.css\" type=\"text/css\">";
 echo "
 <style type='text/css'>
 a.g:Link,a.g:Visited{
@@ -74,7 +76,7 @@ echo "<a href='$fromurl'>返回</a>";
 foreach($a_path as $path)
 {
 	echo "<a class='g' href='./dirpriv.php?d=$repos$path'><h5>$repos$path</h5></a>";
-	echo "<table>";
+	echo "<table class='detail'>";
 	$p_a=array('n'=>'无权限','r'=>'只读','w'=>'读写');
 	if(in_array($path,$a_upath))
 	{

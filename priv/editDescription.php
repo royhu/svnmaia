@@ -21,7 +21,7 @@ if (($_SESSION['role'] !='admin')and($_SESSION['role'] !='diradmin'))
 	echo "您无权进行此操作！";
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 function safe($str)
 { 

@@ -147,5 +147,42 @@ function isSamplePassword($password,$username=null)
         return false;
        
 }
+//确保权限组表有 last_used（最近使用时间）字段，返回字段是否可用
+function ensureGroupLastUsedField()
+{
+	static $available=null;
+	if($available!==null)return $available;
+	$available=false;
+	$result=mysql_query("show columns from svnauth_group like 'last_used'");
+	if(!$result)return $available;
+	if(mysql_num_rows($result)==0)
+	{
+		mysql_query("ALTER TABLE svnauth_group ADD last_used int(11) default 0");
+		$result=mysql_query("show columns from svnauth_group like 'last_used'");
+		if(!$result or mysql_num_rows($result)==0)return $available;
+	}
+	$available=true;
+	return $available;
+}
+//更新权限组的最近使用时间
+function updateGroupLastUsed($gids)
+{
+	if(empty($gids))return;
+	if(!ensureGroupLastUsedField())return;
+	$ids=array();
+	foreach((array)$gids as $gid)
+	{
+		$gid=trim($gid);
+		if(is_numeric($gid))$ids[]=$gid;
+	}
+	if(empty($ids))return;
+	mysql_query("update svnauth_group set last_used=".time()." where group_id in (".implode(',',$ids).")");
+}
+//权限组排序：最近使用的在前，最久未使用的在后（配合 order by 使用）
+function groupOrderSql()
+{
+	if(!ensureGroupLastUsedField())return "group_name asc";
+	return "last_used desc, group_name asc";
+}
 
 ?>

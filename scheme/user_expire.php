@@ -12,7 +12,7 @@ if ($_SESSION['role'] !='admin')
 	echo "您无权进行此操作！";
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 function safe($str)
 { 
 	return "'".mysql_real_escape_string($str)."'";

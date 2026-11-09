@@ -7,7 +7,7 @@ if(! file_exists($passwdfile))
   echo "File not found! Please check your <a href='../config/index.php'>config</a>!";
   exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 
 $handle = fopen($passwdfile, "r");

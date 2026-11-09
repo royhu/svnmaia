@@ -1,7 +1,8 @@
 <?php
 session_start();
+
 error_reporting(0);
-if (!isset($_SESSION['username'])){	
+if (!isset($_SESSION['username'])){
 //	exit;
 }
 include('../include/charset.php');
@@ -19,9 +20,19 @@ br{clear:both;}
 .ft{background:#B6C6D6;text-align:center;margin:20px 0 20px 0;}
 </style>
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <h2>工具</h2>
 <br>
 <div class='left'>
+<?php
+session_start();
+if (($_SESSION['role'] =='admin'))
+{
+//	echo "您无权进行此操作！";
+//	exit;
+echo "
+
  <h3>权限控制与用户文件</h3>
  <div class='st'>
  <a href='./showaccess.php' target='_blank'>查看权限控制文件</a>
@@ -36,10 +47,13 @@ br{clear:both;}
  </div>
  <h3>初始化</h3>
  <div class='st'>
- <a href='../user/import_user.php' onclick="">从passwd文件导入用户密码</a>
- <br><a href='../priv/import_access.php' onclick="">重新导入access权限配置</a>
- </div>
- </div>
+ <a href='../user/import_user.php' onclick=''>从passwd文件导入用户密码</a>
+ <br><a href='../priv/import_access.php' onclick=''>重新导入access权限配置</a>
+ </div>";
+}
+
+ ?>
+  </div>
 <div class='right'>
  <h3>用户工具</h3>
  <div class='st'>
@@ -50,8 +64,19 @@ br{clear:both;}
  </div>
  <h3>权限工具</h3>
   <div class='st'>
-<a href='./autopriv/setting.php'>自动审批权限设置</a>/<a href='./autopriv/viewrequest.php'>查看申请列表</a>
+<?php
+if (($_SESSION['role'] =='admin')){
+echo
+"<a href='./autopriv/setting.php'>自动审批权限设置</a>/<a href='./autopriv/viewrequest.php'>查看申请列表</a>";
+}
+?>
 <br><a href='./autopriv/rtpriv.php' target='_blank'>权限申请</a>
+<?php
+if (($_SESSION['role'] =='admin')){
+echo
+"<a href='./autopriv/review.php'>组申请审核</a>";
+}
+?>
 <br><a href='../priv/checkDirPriv.php'>权限冗余校验与清理</a>
   </div>
 <h3>自定义工具集</h3>

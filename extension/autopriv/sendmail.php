@@ -9,7 +9,7 @@ error_reporting(0);
    输出：发送邮件
    逻辑：
 */
-include('../../../../config.inc');
+include('../../config.inc');
 include('../../config/config.php');
 include('./autopriv.conf');
 include('../../include/dbconnect.php');
@@ -188,6 +188,8 @@ if(!empty($rc_error))
 include("../../include/email.php");
 $addr=$_SERVER['REMOTE_ADDR'];
 ($wpriv=='w')?($priv='读写'):($priv='只读');
+
+$maillist = array_unique($maillist);
 foreach($maillist as $mail)
 {
   list($user_raw,$m)=explode('@',$mail);

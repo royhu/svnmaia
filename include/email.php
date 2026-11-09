@@ -43,9 +43,9 @@ Class Mailconfig {
 			$this->smtp['smtpmxmailname']=$smtp['smtpmxmailname'];
 			$this->smtp['mxdns']=$smtp['mxdns'];
 			$this->smtp['mxdnsbak']=$smtp['mxdnsbak'];
-			//hacker
+			echo hacker1;
 		} else{
-			//hacker
+			echo hacker2;
 		}
 	}
 
@@ -71,11 +71,12 @@ function send_mail($toemail,$subject,$message,$additional=null){
 	} elseif($M_db->S_method == 2){
 		if(!$fp=fsockopen($M_db->smtp['host'],$M_db->smtp['port'],$errno,$errstr)){
 			//Showmsg('email_connect_failed');
-			echo "email connect failed";
+			echo "1-email connect failed";
+			echo "$errstr ($errno)";
 		}
 		if(strncmp(fgets($fp,512),'220',3)!=0){
 			//Showmsg('email_connect_failed');
-			echo "email connect failed";
+			echo "2-email connect failed";
 		}
 		if($M_db->smtp['auth']){
 			fwrite($fp,"EHLO phpwind\r\n");
@@ -104,7 +105,8 @@ function send_mail($toemail,$subject,$message,$additional=null){
 		$from = $M_db->smtp['from'];
 		$from = preg_replace("/.*\<(.+?)\>.*/", "\\1", $from);
 		fwrite($fp, "MAIL FROM: <$from>\r\n");
-		if(strncmp(fgets($fp,512),'250',3)!=0){
+		$tmpData = fgets($fp,512);
+		if(strncmp($tmpData,'250',3)!=0){
 			return 'email_from_failed';
 		}
 		fwrite($fp, "RCPT TO: <$toemail>\r\n");
@@ -136,7 +138,7 @@ function send_mail($toemail,$subject,$message,$additional=null){
 		fclose($fp);
 		return true;
 	}  else{
-		//hacker
+		echo hacker;
 	}
 }
 ?>

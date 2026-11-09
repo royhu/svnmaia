@@ -8,7 +8,7 @@ error_reporting(0);
    输出：检查结果
    
 */
-include('../../../../config.inc');
+include('../../config.inc');
 include('../../include/dbconnect.php');
 function checkurl($t_url)
 {

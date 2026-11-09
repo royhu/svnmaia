@@ -2,6 +2,8 @@
    session_start();
 include('../include/charset.php');
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <?php
 if (!isset($_SESSION['username'])){	
 	echo "请先<a href='./loginfrm.php'>登录</a> ！";
@@ -9,7 +11,7 @@ if (!isset($_SESSION['username'])){
 	exit;
 }
 error_reporting(0);
-include('../../../config.inc');
+include('../config.inc');
 function safe($str)
 { 
 	$str=htmlspecialchars($str,ENT_QUOTES);
@@ -50,6 +52,13 @@ if (mysql_select_db(DBNAME))
 		$query="delete from svnauth_permission where $paras";
 		$result=mysql_query($query);
 		@include('./gen_passwd.php');
+		//带原搜索关键字返回用户查询页，重新搜索一遍
+		$kw=isset($_GET['kw'])?$_GET['kw']:(isset($_POST['kw'])?$_POST['kw']:'');
+		if($kw!='')
+		{
+			echo " <script>setTimeout('document.location.href=\"viewuser.php?username=".rawurlencode($kw)."\"',0)</script>";
+			exit;
+		}
 		echo " <script>setTimeout('top.location.href=\"../default.htm\"',0)</script>";
 		//header("Cache-Control: no-cache");
 		//echo "<script>window.history.back();</script>";
@@ -128,7 +137,7 @@ if (mysql_select_db(DBNAME))
 		<fieldset>
 		<legend>编辑用户信息</legend>
 		<input type=hidden name=action value='modify'>
-		<table  cellspacing='1' cellpadding='0' width='70%' border='0' >
+		<table  cellspacing='1' cellpadding='0' width='70%' border='0' class='editform edituser'>
 		<tr><th>用户名</th><th>姓名</th><th>工号</th><th>部门</th><th>邮件</th></tr>
 HTML;
 		if ($_SESSION['role']=='admin'){
@@ -184,7 +193,7 @@ HTML;
 		<fieldset>
 		<legend>重置用户密码</legend>
 		<input type=hidden name=action value='chpasswd'>
-		<table  cellspacing='1' cellpadding='0' width='70%' border='0' >
+		<table  cellspacing='1' cellpadding='0' width='70%' border='0' class='editform editpwd'>
 		<tr><th>用户名</th><th>新密码</th><th>新密码确认</th></tr>
 HTML;
 		if ($_SESSION['role']=='admin'){

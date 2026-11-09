@@ -1,12 +1,21 @@
 <HTML><HEAD>
 <meta name="verify-v1" content="5yUKdffYxbRnfIwdZh3oIrrKFl7xRU3gSBH6aXG6ih4=" />
 <META http-equiv=Content-Type content="text/htm; charset='utf-8'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>svn目录权限</title>
 <META content="MSHTML 6.00.2900.2873" name=GENERATOR></HEAD>
-     <frameset cols="200,*" framespacing="2" frameborder="2" border="2" bordercolor="#fff">
+     <frameset id="privFrame" cols="200,*" framespacing="2" frameborder="2" border="2" bordercolor="#fff">
         <frame src="../xtree/svnlist.htm" name="lf1" noresize>
         <frame src="../priv/dirpriv.php" name="rt1" noresize>
       </frameset>
      <noframes>你的浏览器版本太老，无法正常显示，请点击<a href="../priv/dirpriv.php">这里</a></noframes>
+     <script language="javascript">
+	//手机竖屏时收窄左侧目录树，把空间留给权限编辑区
+	var fsList=document.getElementsByTagName('frameset');
+	if(fsList.length>0 && window.screen && window.screen.width < 820)
+	{
+		fsList[0].cols="120,*";
+	}
+     </script>
 
 </HTML>

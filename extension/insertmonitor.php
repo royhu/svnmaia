@@ -9,7 +9,7 @@ error_reporting(0);
    输出：发送邮件
    逻辑：
 */
-include('../../../config.inc');
+include('../config.inc');
 include('../config/config.php');
 include('../include/dbconnect.php');
 foreach($_POST as $k=>$v)

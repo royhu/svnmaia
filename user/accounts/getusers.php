@@ -9,7 +9,7 @@ include('../../include/charset.php');
          将字符串参数存入文件pwdurl,生成url类似 accounts/?u=urlencode(username)&c=字符串
 				将字符串发给对应信箱。
 */
-include('../../../../config.inc');
+include('../../config.inc');
 $mlink=mysql_connect(SERVER,USERNAME2,PASSWORD2) or die("数据库链接失败！请联系管理员");
 if (!mysql_select_db(DBNAME))
 {

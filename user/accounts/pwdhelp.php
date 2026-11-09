@@ -4,6 +4,8 @@ include('../../include/charset.php');
 <html>
 <head>
   <title>找回svn密码向导</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../css/mobile.css" type="text/css">
 </head>
 <style type='text/css'>
 div{margin:15px}
@@ -26,7 +28,7 @@ if($nt>3600*2)
 }
 $sig1=$_GET['sig'];
 $addr=$_SERVER['REMOTE_ADDR'];
-include('../../../../config.inc');
+include('../../config.inc');
 include('../../config/config.php');
 $sig=md5($ss.SECRET_KEY.$addr);
 if($sig1 != $sig)
@@ -49,8 +51,8 @@ foreach($cookie as $name)
    	<fieldset>
    <div id='inputblock'>
    <h4>请在下列表格中输入您的svn用户名，系统会根据用户名将密码重置链接发送到您的邮箱中<br>请注意查收邮件。</h4>
-   		
-   <table>
+
+   <table class='formtbl'>
    <tr><td>请输入svn用户名：</td><td><input type=text name=username></td></tr>
    <tr><td>&nbsp; </td></tr>
    <tr><td><input type=reset value="取消"></td><td><input type=button value="下一步" onclick="loadTip()"></td></tr>

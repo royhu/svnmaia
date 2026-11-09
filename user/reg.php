@@ -2,7 +2,7 @@
 //用户注册处理
 include('../include/charset.php');
 error_reporting(0);
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 if(file_exists('../config/config.php'))
 {
@@ -72,7 +72,23 @@ if (mysql_num_rows($result) > 0){
   $query = "insert into svnauth_user (user_name,password,full_name,email,staff_no,department,supervisor,expire) values ('$username','$passwd','$fullname','$email','$staff_no','$department',0,'$expire')";
   $result =mysql_query($query) or die('注册失败：'.mysql_error());
   if($result){
-	$username=escapeshellarg($username); 
+	$user_id=mysql_insert_id($mlink);
+	//写入所选权限组
+	$group_ids=isset($_POST['group_ids'])?$_POST['group_ids']:'';
+	$group_ids=trim($group_ids);
+	if($group_ids!='')
+	{
+		$gids=explode(',',$group_ids);
+		foreach($gids as $gid)
+		{
+			$gid=trim($gid);
+			if(!is_numeric($gid))continue;
+			$gquery="insert into svnauth_groupuser (group_id,user_id,status) values ($gid,$user_id,1)";
+			mysql_query($gquery,$mlink);
+		}
+		updateGroupLastUsed($gids);
+	}
+	$username=escapeshellarg($username);
 	$passwd0=escapeshellarg($passwd0);
   	exec($htpasswd.' -m -b '. $passwdfile . ' '.$username.' '.$passwd0);
   	echo "用户注册成功！"; 

@@ -9,7 +9,7 @@ include('../../include/charset.php');
          没有则显示无效链接，给出返回主页的url。
 				 有，则显示修改密码界面，传入给chpasswd.php；生成user和某字符串的加密签名参数
 */
-include('../../../../config.inc');
+include('../../config.inc');
 $mlink=mysql_connect(SERVER,USERNAME2,PASSWORD2) or die("数据库链接失败！请联系管理员");
 if (!mysql_select_db(DBNAME))
 {
@@ -50,6 +50,8 @@ if (!$trueurl)
 //有，则生成签名，显示修改密码界面。
 $sig=md5($para_str.$user.SECRET_KEY);
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/mobile.css" type="text/css">
 <style type='text/css'>
  fieldset{border:2px solid #A4CDF2;padding:20px;background:#FFFFFF;width:60%}
  legend{color:#1E7ACE;padding:3px 20px;border:1px solid #A4CDF2;background:#FFFFFF;}
@@ -58,7 +60,7 @@ $sig=md5($para_str.$user.SECRET_KEY);
 <form name=regform action="./chpasswd.php" method="post"  onSubmit="return fCheck()">
 	<fieldset>
 		<legend>重置密码</legend>
-<table >
+<table class='formtbl'>
 	<tr>
 		<th>用户名：</th>
 		<td><input type=text readonly name=user value="<?php echo $user ?>">

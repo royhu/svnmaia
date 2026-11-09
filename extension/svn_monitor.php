@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('../include/charset.php');
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 $adminflag='admin=false;';
 if (!isset($_SESSION['username'])){	
@@ -19,6 +19,8 @@ $url=$_GET['url'];
 <html>
 <head>
   <title>监控svn代码提交</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/mobile.css" type="text/css">
 </head>
 <style type='text/css'>
 div{margin:15px;}
@@ -33,8 +35,8 @@ fieldset{border:2px solid #A4CDF2;padding:20px;background:#DFE8F6;width:70%}
    	<fieldset>
 	<legend>增加svn代码监控</legend>
    <div id='inputblock'>
-   		
-   <table valign=top>
+
+   <table valign=top class='formtbl wraptbl'>
    <tr><td colspan=3>监控的svn url:</td><tr><td><input type=text name='wurl' size='65' value="<?php echo $url ?>" onBlur="checkurl();"></td>
 <td><input type=button value="提交" style='width:80px'  onclick="return tCheck()">&nbsp;&nbsp;&nbsp;<a href='#' onclick="showmore();">高级</a></td></tr>
   <tr><td colspan=3><label id='urltip' style='color:red;font-size:12px;'></label></td></tr>

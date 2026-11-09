@@ -2,7 +2,7 @@
  error_reporting(0);
 include('../include/charset.php');
 include('../include/requireAuth.php');
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 $query="select group_name,group_id from svnauth_group order by group_name";
 $result = mysql_query($query);

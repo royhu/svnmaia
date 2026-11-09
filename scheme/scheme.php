@@ -21,7 +21,7 @@ include('../include/charset.php');
 <div style="background:#B6C6D6;text-align:center;color:#fe392a;margin:20px 0 20px 0;">
 <?php
 include('../include/basefunction.php');
-include('../../../config.inc');
+include('../config.inc');
 $mlink=mysql_connect(SERVER,USERNAME2,PASSWORD2)or die("<br>数据库链接失败！请联系<a href='mailto:xuejiang.li@yahoo.com.cn'>管理员</a>");
 if (mysql_select_db(DBNAME))
 {

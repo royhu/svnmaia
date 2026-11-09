@@ -11,8 +11,10 @@ Date:2009-02-19
 <html>
 <head>
   <title>svn用户组管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 a{position:relative;font-style:underline;color:blue;CURSOR:pointer;}
 .title{background: #007ED1 url(../img/bg.png)  100% 100%;font-size:11pt;color:white;}
@@ -30,6 +32,7 @@ a{position:relative;font-style:underline;color:blue;CURSOR:pointer;}
  b { border:1px solid #fff; color:#000; font-weight:bold;}
 
 </style>
+<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
 <script language="javascript">
 <!--
 var clned=0;
@@ -78,10 +81,34 @@ function checkg()
 }
 -->
 </script>
+
+<script  type="text/javascript">
+$(document).ready(function(){
+	$("#apply").click(function(){
+		var user = $("#user_id").val();
+		var group = $("#group_id").val();
+		 $.get("add_group_user.php",{"user":user,"group":group},function(data){
+/*			 if(data == 1){
+			     alert("已申请，请等待管理员审核。");
+
+			 }
+			 else {
+				 alert("申请失败，请重试");
+				 }
+*/
+			 location.reload() ;
+			 });
+	});
+
+});
+
+
+</script>
 <body>
 <?php
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
+include('../include/basefunction.php');
 $isdir_admin=false;
 $isadmin=false;
 function safe($str)
@@ -155,6 +182,7 @@ if(isset($_POST['groupname']))
 		$result=mysql_query($query);
 		$row=mysql_fetch_row($result);
 		$gid=$row[0];
+		updateGroupLastUsed($gid);
 		echo "<script>window.location =\"viewgroup.php?gid=$gid&grp=$gname\";</script>";
 		exit;
 	}else
@@ -201,8 +229,7 @@ if(isset($_POST['guact']))
 			{
 				if(empty($u))continue;
 				$u=safe($u);
-				$query="insert into svnauth_groupuser (group_id,user_id) select $gid,user_id from svnauth_user where user_name=$u";
-			//	echo $query;
+				$query="insert into svnauth_groupuser (group_id,user_id,status) select $gid,user_id,1 from svnauth_user where user_name=$u";
 				mysql_query($query);
 				if (mysql_affected_rows() > 0)
 				{
@@ -220,12 +247,16 @@ if(isset($_POST['guact']))
 				}else unset($unknow_usr);
 			}
 			$_GET['gid']=$gid;
-			if($data_c)@include('../priv/gen_access.php');
+			if($data_c)
+			{
+				updateGroupLastUsed($gid);
+				@include('../priv/gen_access.php');
+			}
 		}
 		if(isset($_POST['groupowner']))
 		{
 				$u=safe($_POST['groupowner']);
-				$query="insert into svnauth_groupuser (group_id,user_id,isowner) select $gid,user_id,1 from svnauth_user where user_name=$u";
+				$query="insert into svnauth_groupuser (group_id,user_id,isowner,status) select $gid,user_id,1,1 from svnauth_user where user_name=$u";
 				mysql_query($query);
 	 			$t_e=mysql_error();
 				if (!empty($t_e))
@@ -239,6 +270,7 @@ if(isset($_POST['guact']))
 					//echo mysql_error();
 					//echo $query;
 				}
+				updateGroupLastUsed($gid);
 		}
 	}	
 }
@@ -279,19 +311,41 @@ if(isset($_GET['gid']) )
 	}
 	//------	
 	echo "导航：<a href='$fromurl'>返回</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#grouppriv'>组权限</a>";
-	$query="select user_name,full_name,svnauth_groupuser.user_id,isowner from svnauth_groupuser,svnauth_user where svnauth_groupuser.user_id=svnauth_user.user_id and svnauth_groupuser.group_id=$gid";
+	$query="select user_name,full_name,svnauth_groupuser.user_id,isowner from svnauth_groupuser,svnauth_user where svnauth_groupuser.user_id=svnauth_user.user_id and svnauth_groupuser.group_id=$gid and status = 1";
 	$result=mysql_query($query);
 	//打印出组用户列表、权限目录
 	echo "<h3>$grp 组详情：</h3><h4>组成员</h4>";
 	if($isadmin)
 	echo  <<<SCMBBS
 	<form method="post" action="" name='guform' onsubmit="return fCheck($ii)">
-  	<table><tr>
+  	<table class='toolbar'><tr>
 		<td width=100><input name="act" type=submit value="删除" onclick="return confirm('确实要从组中删除这些用户吗?');"></td>
 		<td width=160><a  onclick='showadd(0)'>添加用户</a></td>
 		<td width=160><a onclick='showadd()'>批量添加用户</a><input type=hidden name='guact' value='$gid'></td>
 	</tr></table>
 SCMBBS;
+	else{
+
+	    $user_id = $_SESSION['uid'];
+	    $group_id = $_GET['gid'];
+        $query_group = "SELECT status FROM `svnauth_groupuser` where user_id=$user_id and group_id = $group_id";
+        $result_group = mysql_query($query_group);
+        $num = mysql_fetch_row($result_group);
+        if ($num[0] == "" ) {
+            echo "<table><tr>
+					        <input id='user_id' type='hidden' name='user_id' value='$user_id' />
+					        <input id='group_id' type='hidden' name='group_id' value='$group_id' />
+		<td width=100><input id='apply' type='button' name='apply' value='申请加入群组' /></td>
+
+    	</tr></table>";
+        };
+        if ($num[0] == "0") {
+            echo "<table><tr>
+            <td width=100><input type='button' value='已申请，请等待审核。' /></td>
+
+            </tr></table>";
+        }
+    }
 	echo "<table><tr><td><table>";
 	$i=0;
 	while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
@@ -327,14 +381,14 @@ HTML;
 	echo "<h4>组负责人</h4>";
 if($isadmin)
 	echo  <<<SCMBBS
-  	<table><tr>
+  	<table class='toolbar'><tr>
 		<td width=100><input name="act" type=submit value="删除" onclick="if(confirm('确实要删除吗?')){setowner();return true;}return false;"><input type=hidden name="editowner" id="editowner" /></td>
 		<td ><input type='text' name='groupowner' id='groupowner' ><input type=submit value='添加负责人' onclick='return addowner()'></td>
 	</tr></table>
 SCMBBS;
 	echo "<table>$ownerArray</table>";
-	//&******************	
-	echo "<a id='grouppriv'></a><h4>组权限</h4><table>";
+	//&******************
+	echo "<a id='grouppriv'></a><h4>组权限</h4><table class='detail'>";
 	if($isadmin)$st='操作';
 	echo "<tr><td>目录</td><td></td><td>权限</td><td>$st</td></tr>";
 	$query="select id,repository,path,permission from svnauth_g_permission where group_id=$gid";
@@ -358,21 +412,28 @@ SCMBBS;
 	if($isadmin)echo "</form>";
 }
 if(isset($_GET['gid']) )exit;
-$query="select svnauth_group.group_id,svnauth_group.group_name from svnauth_group,svnauth_groupuser where svnauth_groupuser.group_id=svnauth_group.group_id and svnauth_groupuser.user_id=". $_SESSION['uid'] . " group by group_name";
-$groupview="<a href='?a=1'>--><u>查看所有组</u></a>";
-if(isset($_GET['a']) )
-{
-	$query="select group_id,group_name from svnauth_group group by group_name";
-	$groupview="<a href='?reflash'>--><u>查看我所在组</u></a>";
-}
+$mineflag=isset($_GET['mine']);
+$sort=(isset($_GET['sort']) and $_GET['sort']=='used')?'used':'name';
+if($sort=='used')
+	$orderby=(ensureGroupLastUsedField())?"max(last_used) desc, group_name asc":"group_name asc";
+else
+	$orderby="group_name asc";
+if($mineflag)
+	$query="select group_id,group_name from svnauth_group where group_id in (select group_id from svnauth_groupuser where user_id=". $_SESSION['uid'] . " and status=1) group by group_name order by $orderby";
+else
+	$query="select group_id,group_name from svnauth_group group by group_name order by $orderby";
+$groupview=($mineflag)?"<a href='?sort=$sort'>--><u>查看所有组</u></a>":"<a href='?mine=1&sort=$sort'>--><u>查看我所在组</u></a>";
+$sortview=($sort=='used')
+	?"<a href='?sort=name".($mineflag?'&mine=1':'')."'>--><u>按组名排序</u></a>"
+	:"<a href='?sort=used".($mineflag?'&mine=1':'')."'>--><u>按最近使用排序</u></a>";
 $result = mysql_query($query);
 	echo  <<<SCMBBS
-<h3>权限组列表&nbsp; &nbsp; &nbsp;$groupview</h3>	
-	<form method="post" action="group_modify.php" name='groupform' onsubmit="return fCheck($ii)">	
+<h3>权限组列表&nbsp; &nbsp; &nbsp;$groupview&nbsp; &nbsp; &nbsp;$sortview</h3>
+	<form method="post" action="group_modify.php" name='groupform' onsubmit="return fCheck($ii)">
 SCMBBS;
 if($_SESSION['role']=="admin")
 	echo <<<SCMBBS
-		<table class='subtitle'>
+		<table class='subtitle toolbar'>
 	   <tr>
 	  <td width="40"><input type=hidden name='del_g' value='del_g'></td>
 		<td><input name="action" type=submit value="删除" onclick="return confirm('确实要删除这些组吗?');"></td><td width=40>&nbsp;</td><td><a href="#addgroup" class='bt'><font color=white>创建组</font></a></td><td width=40>&nbsp;</td><td><a href="cleangroup.php" class='bt'><font color=white>清除空组</font></a></td><td width=80>&nbsp;</td><td><input name="action" type=submit value="重命名"></td><td width=80>&nbsp;</td><td><input name="action" type=submit value="复制组"></td>	

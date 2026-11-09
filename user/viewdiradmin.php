@@ -7,9 +7,11 @@ if (!isset($_SESSION['username'])){
 	echo" <script>setTimeout('document.location.href=\"../user/loginfrm.php\"',0)</script>"; 	
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 echo <<<HTML
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 .trc2{background: #d7d7d7;font-size:10pt;}
 .trc1{font-size:10pt}
@@ -47,6 +49,6 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
         $adminpath .= "<tr class=$cls><td>$ustr</td><td>&nbsp;$pstr</td></tr>";
 }
 echo "<h4>目录管理员: <a href='?o=n'>按姓名</a>   <a href='?o=d'>按目录</a></h4>";
-echo "<table border=0 cellspacing=0>";
+echo "<table class='detail' border=0 cellspacing=0>";
 echo $adminpath."</table>";
 

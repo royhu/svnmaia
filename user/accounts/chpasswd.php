@@ -14,7 +14,7 @@ $sig=stripslashes($_POST["sig"]);
 $para_str=stripslashes($_POST["para"]);
 $newpasswd=escapeshellcmd($_POST['pswd']);
 $newpasswd1=trim($_POST['pswd0']);
-include('../../../../config.inc');
+include('../../config.inc');
 include('../../include/basefunction.php');
 $sig0=md5($para_str.$user.SECRET_KEY);
 if(strcasecmp(urlencode($sig0),trim($sig))!=0)

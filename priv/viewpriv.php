@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])){
 	echo" <script>setTimeout('document.location.href=\"../user/loginfrm.php\"',0)</script>"; 	
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 $user_id=$_GET['u'];
 if(!is_numeric($user_id))
@@ -81,7 +81,8 @@ if($_SESSION['role']=='admin')
 	$str='操作';
 }
 echo <<<HTML
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 .trc2{background: #d7d7d7;font-size:10pt;}
 .trc1{font-size:10pt
@@ -94,7 +95,7 @@ if(($result) and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$stat=$row['fresh'];
 	if(!empty($stat))echo"<b><font color=red>此用户已被冻结，所列权限不生效！</font></b>";
 }
-echo "<table><tr><th>路径</th><th>权限</th><th>$str</th></tr>";
+echo "<table class='detail'><tr><th>路径</th><th>权限</th><th>$str</th></tr>";
 while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$repos=$row['repository'];
 	$path=$row['path'];
@@ -123,7 +124,7 @@ echo "</table>";
 $query="select svnauth_group.group_name,svnauth_group.group_id from svnauth_groupuser,svnauth_group where svnauth_groupuser.group_id=svnauth_group.group_id and svnauth_groupuser.user_id = $user_id";
 $result = mysql_query($query);
 echo "<h4>所在权限组:</h4>";
-echo "<table>";
+echo "<table class='detail'>";
 while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$groupname=$row['group_name'];
 	$gid=$row['group_id'];
@@ -155,6 +156,6 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 if(!empty($adminpath))
 {
 	echo "<h4>所管理的目录:</h4>";
-	echo "<table>";
+	echo "<table class='detail'>";
 	echo $adminpath."</table>";
 }

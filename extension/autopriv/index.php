@@ -8,7 +8,7 @@ error_reporting(0);
    输出：权限
    逻辑：
 */
-include('../../../../config.inc');
+include('../../config.inc');
 include('../../config/config.php');
 include('../../include/dbconnect.php');
 if(isset($_POST['flag']))
@@ -21,6 +21,16 @@ if(isset($_POST['flag']))
   if(empty($mail_back))$mail_back='无';
   $optype=mysql_real_escape_string(stripslashes(trim($_POST["optype"])));
   $expire_t=stripslashes(trim($_POST["expire_t"]));
+  // 判断操作员是否登录
+  session_start();
+  if (empty($_SESSION)){
+      $host =$_SERVER['HTTP_HOST'];
+      echo "请先登录系统然后进行操作";
+      echo <<<HTML
+        <a href="http://$host" target="_blank" >点击： $host 去登陆</a>;
+HTML;
+      exit;
+  }
 //验证url是否被修改
   $sig=urldecode(md5($salt.SECRET_KEY.$id));
   if($sig != $para_str)
@@ -192,6 +202,7 @@ if($result)
 	$tip="&nbsp;&nbsp;&nbsp;Hi,$us 申请了<font color=red>$svnurl/$repos/$path</font>的<font color=red>$priv</font>权限，请审慎处理：";
 }
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style type='text/css'>
  fieldset{border:2px solid #A4CDF2;padding:20px;background:#FFFFFF;width:60%}
  legend{color:#1E7ACE;padding:3px 20px;border:1px solid #A4CDF2;background:#FFFFFF;}
@@ -199,6 +210,7 @@ if($result)
 .ft{background:#B6C6D6;text-align:center;margin:20px 0 20px 0;}
 #myexpire{display:none;border:1px solid #A2cd22;}
 </style>
+<link rel="stylesheet" href="../../css/mobile.css" type="text/css">
 <script language="javascript">
 <!--
 function showexpire(sw)

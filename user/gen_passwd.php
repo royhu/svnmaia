@@ -11,7 +11,7 @@ if(file_exists('../config/config.php'))
 	echo" <script>setTimeout('document.location.href=\"../config/index.php\"',0)</script>";  	
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 	mysql_query("SET NAMES UTF8"); 
 

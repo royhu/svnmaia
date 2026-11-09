@@ -1,9 +1,11 @@
 <?php
 include('../include/charset.php');
+echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+echo '<link rel="stylesheet" href="../css/mobile.css" type="text/css">';
 //本单元的作用：激活用户，并重置用户有效期\提醒次数重置为0；
 //处理：验证用户输入连接是否正确，如果正确，则处理之。
 include('../include/basefunction.php');
-include('../../../config.inc');
+include('../config.inc');
 include('../config/config.php');
 echo "<h3>用户信息确认与续订</h3>";
 	$user=$_GET['u'];

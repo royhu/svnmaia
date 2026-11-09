@@ -21,7 +21,7 @@ if (($_SESSION['role'] !='admin')and($_SESSION['role'] !='diradmin'))
 	echo "您无权进行此操作！";
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/basefunction.php');
 function safe($str)
 { 
@@ -92,6 +92,10 @@ if (mysql_num_rows($result) > 0){
 	mysql_query($query);
 	$query="insert into svnauth_g_permission (group_id,repository,path,permission,expire) select group_id,'$repos','$path',permission,expire from svnauth_g_permission where  repository='$f_repos' and path = '$dir' ";
 	mysql_query($query);
+	$used_gids=array();
+	$gresult=mysql_query("select group_id from svnauth_g_permission where repository='$repos' and path='$path'");
+	while(($gresult)and($grow=mysql_fetch_array($gresult,MYSQL_BOTH)))$used_gids[]=$grow['group_id'];
+	updateGroupLastUsed($used_gids);
 //	$err .= mysql_error();
 
 }else
@@ -141,6 +145,7 @@ if (mysql_num_rows($result) > 0){
 		$detail_array=array();
 	        $detail_array=$_POST['group_detail'];
 		$clear=false;
+		$used_gids=array();
 		foreach($detail_array as $v)
 		{
 			list($rights,$group,$t_gid,$type)=explode(' ',$v);
@@ -153,12 +158,14 @@ if (mysql_num_rows($result) > 0){
 			}
 			if(trim($type)=='c')continue;
 			if(empty($t_gid))continue;
+			if(is_numeric(trim($t_gid)))$used_gids[]=$t_gid;
 			$t_gid=safe($t_gid);
 			$rights=safe($rights);
 			$query="insert into svnauth_g_permission(group_id,repository,path,permission)values($t_gid,'$repos','$path',$rights)";
 			mysql_query($query);
 			$err .= mysql_error();
 		}
+		updateGroupLastUsed($used_gids);
 
 	}
 	if(!empty($err))

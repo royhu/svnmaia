@@ -32,8 +32,8 @@ if(! file_exists($accessfile))
   echo "file not found! Please check your input!";
   exit;
 }
-include('../../../config.inc');
-include('../include/dbconnect.php'); 
+include('../config.inc');
+include('../include/dbconnect.php');
 //import前备份
 $today = date("Ymd_His");
 $backupfile=$accessfile.$today;
@@ -247,7 +247,7 @@ if ($handle) {
 						$query="insert into svnauth_permission (repository,path,user_id,permission,expire) values (\"$repos\",\"$path\",$uid_array[$user],\"$pm\",\"$expire\")";
 						mysql_query($query);
 					}else{
-						$query="insert into svnauth_groupuser(group_id,user_id) values ($gid_array[$g1],$uid_array[$user])";
+						$query="insert into svnauth_groupuser(group_id,user_id,status) values ($gid_array[$g1],$uid_array[$user],1)";
 						mysql_query($query);
 					}
 				}else 
@@ -278,7 +278,7 @@ if ($handle) {
 					mysql_query($query);
 					continue;
 				}
-				$query="insert into svnauth_groupuser(group_id,user_id) values ($gid_array[$g1],$uid_array[$user])";      	    	      
+				$query="insert into svnauth_groupuser(group_id,user_id,status) values ($gid_array[$g1],$uid_array[$user],1)";
 				mysql_query($query);
 			//	echo $query."$user<br>";
       	    		}

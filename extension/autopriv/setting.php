@@ -35,6 +35,7 @@ if(isset($_POST['flag']))
 }
 if(file_exists('./autopriv.conf'))include('./autopriv.conf');
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style type='text/css'>
 .ipt{position:absolute;left:220px;clear:both;float:left;background:#ece9d8;width:250px;}
 br{clear:both;}
@@ -47,6 +48,7 @@ br{clear:both;}
 .err{color:red;}
 </style>
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../../css/mobile.css" type="text/css">
 <form method='post' action=''>
 <fieldset>
 <h3>权限自动审批设置</h3>

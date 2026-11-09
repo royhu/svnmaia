@@ -3,6 +3,8 @@
 include('../include/charset.php');
    error_reporting(0);
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type="text/css">
 .focus{background:url(../img/u2.png);}
 .bottom{background:#934caa;height:4px;}
@@ -42,12 +44,12 @@ li ul{
 }
 li:hover ul, li.over ul{display:block;}
 </style>
-<table>
+<table class='topbar'>
 <tr>
-<td width="20%"><map name="mymap"><area href='http://www.scmbbs.com' target='_blank' shape=rect coords="0,0,60,60"></map>
+<td class='toplogo' width="20%"><map name="mymap"><area href='http://www.me.com' target='_blank' shape=rect coords="0,0,60,60"></map>
 <img src='../img/logo.gif' border='0' usemap=#mymap></td>
 <td width="80%">
-<table align="center" width="90%" border="0"  cellspacing="0"  cellpadding="4" class='g2' >
+<table align="center" width="90%" border="0"  cellspacing="0"  cellpadding="4" class='g2 topnav' >
 <tr>
 <td align="center" id='usrf'  width="14%" ><a href='../user/viewuser.php' target='main1' onclick="setfocus('usrf');">用户管理</a></td>
 <td align="center" id='grpf'  width="14%" ><a href='../user/viewgroup.php' target='main1' onclick="setfocus('grpf');">组管理</a></td>

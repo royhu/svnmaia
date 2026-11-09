@@ -1,3 +1,5 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <script language="javascript">
 <!--
 var valueChanged=0;
@@ -407,7 +409,7 @@ function loadTipCallBack() {
 <form name='privform' method='post' action='modifypriv.php'>
 	<fieldset>
 		<br>
-		<table border=0 ><tr valign='top'><td>
+		<table class='stack' border=0 ><tr valign='top'><td>
 <div >
 	<input type='text' id='search1' class='sbar' onkeyup="search('search1','permission_detail[]',1)"/><input type='button' value='定位用户' onclick="search('search1','permission_detail[]',2)"><br>
 <select name="permission_detail[]" MULTIPLE size=23 class='detsl' onchange="showpriv()"><option value='' >-权限----用户名-------</option>
@@ -427,7 +429,7 @@ function loadTipCallBack() {
 <br><input type='radio' name='setright'  id='setread' onclick="rightset('r')"/><label for='setread'>读权限 </label>
 <br><input type='radio' name='setright'  id='setnone' onclick="rightset('n')"/><label for='setnone'>无权限 </label>
 </fieldset>
-<p>有效期:<input type='text' style="width:40" name='expire' maxlength=4 onkeyup='setexpire()'>天
+<p>有效期:<input type='text' style="width:40" name='expire' maxlength=4 inputmode="numeric" onkeyup='setexpire()'>天
 &nbsp;&nbsp;<font class=sf onmouseover="showreadme('readmetip')">说明<span id='readmetip' class='tip' style='display:none'><b>说明：</b>如果为空，则有效期为系统默认有效期。
  </span></font>
  </p>
@@ -465,7 +467,7 @@ function loadTipCallBack() {
 <!-- =================================================   -->
 <!-- =============================================== -->
 <h3>权限组</h3>
-	<table border=0 ><tr valign='top'><td>
+	<table class='stack' border=0 ><tr valign='top'><td>
 <div class='lf'>
 <select name="group_detail[]" MULTIPLE size=13 class='detsl' onDblclick="showgroup()" ><option value='' >-权限----组名-------</option>
 	[Maiasvn:g_dirprive]

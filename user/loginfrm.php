@@ -4,6 +4,8 @@ include('../include/charset.php');
 <html>
 <head>
 <title>svn用户权限管理系统---用户登陆</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type="text/css">
 form{margin:100px 170px;padding:20px;}
 .in{width:140px}
@@ -17,21 +19,21 @@ fieldset{border:2px solid #A4CDF2;padding:20px;background:#FFFFFF;width:400px;}
 <fieldset>
 <legend>登陆svn用户系统</legend>
 <div class='tp'>
-	<table border="0" width="100%" id="table1">
+	<table border="0" width="100%" id="table1" class='formtbl'>
 		<!-- MSTableType="nolayout" -->
 		<tr>
 			<td width="68">用户名：</td>
-			<td ><input type="text" name="username" class='in' >　</td>
+			<td ><input type="text" name="username" class='in' autocomplete="username" autocapitalize="off" autocorrect="off">　</td>
 		</tr>
 		<tr>
 			<td>密码：</td>
-			<td ><input type=password name="pswd"  class='in' >&nbsp;
+			<td ><input type=password name="pswd"  class='in' autocomplete="current-password">&nbsp;
 			<a href="../extension/topwd.php">找回密码</a></td>
 		</tr>
 	</table>
 </div>
 <div class='tp' >
-　<table border="0" width="100%" id="table2">
+　<table border="0" width="100%" id="table2" class='actbar'>
 		<!-- MSTableType="nolayout" -->
 		<tr>
 			<td width="105"><input type=submit value="确定" style="width:80"></td>

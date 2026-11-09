@@ -5,46 +5,88 @@ $url=$_GET['url'];
 ?>
 <html>
 <head>
-  <title>svn权限申请向导</title>
+<title>svn权限申请向导</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/mobile.css" type="text/css">
 </head>
 <style type='text/css'>
-div{margin:15px;}
-fieldset{border:2px solid #A4CDF2;padding:20px;background:#DFE8F6;width:70%}
- legend{color:#AA0000;font-weight:bold;padding:3px 20px;border:2px solid #A4CDF2;}
+div {
+	margin: 15px;
+}
+
+fieldset {
+	border: 2px solid #A4CDF2;
+	padding: 20px;
+	background: #DFE8F6;
+	width: 70%
+}
+
+legend {
+	color: #AA0000;
+	font-weight: bold;
+	padding: 3px 20px;
+	border: 2px solid #A4CDF2;
+}
 </style>
 <body>
 
-<form action=./sendmail.php name=pwdform method=post  onSubmit="return tCheck()">
-   	<fieldset>
-	<legend>svn权限申请</legend>
-   <div id='inputblock'>
-   		
-   <table valign=top>
- <tr><td>申请的url:<input type=text name='wurl' size='45' value="<?php echo $url; ?>" onBlur="checkurl();"></td>
-       <td>&nbsp;&nbsp;权限:<select name="wpriv"><option value='r' label='只读'>只读</option>
-<option value='w' label='读写'>读写</option>
-</select></td></tr>
-  <tr><td colspan=3><label id='urltip' style='color:red;font-size:12px;'></label></td></tr>
-   <tr><td colspan=3>申请理由:</td></tr>
-   <tr><td colspan=3> <textarea id="comment" name="comment" cols="65" rows="5"></textarea></td></tr>
-  <tr><td colspan=3>你的svn用户名：<input type='text' name='username' size='14'  onBlur="loadTip();">* &nbsp;&nbsp;<a href='../../user/reg_user.php' target=_blank>注册</a>&nbsp;&nbsp;&nbsp; 邮箱：<input type=text name='email' id='email'></td></tr>
-<tr><td colspan=3><label id='unametip' style='color:red;font-size:12px;'></label></td></tr>
-   <tr align=center bgcolor='#B6C6D6'><td colspan='3'><input type=button value="提交" style='width:80px'  onclick="return tCheck()"></td></tr>
-   </table>  
-  </div>
-  </fieldset>
-   </form>
+	<form action=./sendmail.php name=pwdform method=post
+		onSubmit="return tCheck()">
+		<fieldset>
+			<legend>svn权限申请</legend>
+			<div id='inputblock'>
+
+				<table valign=top class='formtbl wraptbl'>
+					<tr>
+						<td>申请的url:<input type=text name='wurl' size='45'
+							value="<?php echo $url; ?>" onBlur="checkurl();"></td>
+						<td>&nbsp;&nbsp;权限:<select name="wpriv"><option value='r'
+									label='只读'>只读</option>
+								<option value='w' label='读写'>读写</option>
+						</select></td>
+					</tr>
+					<tr>
+						<td colspan=3><label id='urltip'
+							style='color: red; font-size: 12px;'></label></td>
+					</tr>
+					<tr>
+						<td colspan=3>申请理由:</td>
+					</tr>
+					<tr>
+						<td colspan=3><textarea id="comment" name="comment" cols="65"
+								rows="5"></textarea></td>
+					</tr>
+					<tr>
+						<td colspan=3>你的svn用户名：<input type='text' name='username'
+							size='14' onBlur="loadTip();">* &nbsp;&nbsp;<a
+							href='../../user/reg_user.php' target=_blank>注册</a>&nbsp;&nbsp;&nbsp;
+							邮箱：<input type=text name='email' id='email'></td>
+					</tr>
+					<tr>
+						<td colspan=3><label id='unametip'
+							style='color: red; font-size: 12px;'></label></td>
+					</tr>
+					<tr align=center bgcolor='#B6C6D6'>
+						<td colspan='3'><input type=button value="提交" style='width: 80px'
+							onclick="return tCheck()"></td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+	</form>
 </body>
 
 </html>
+<script type="text/javascript" SRC="../../js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" SRC="../../js/jquery.blockUI.js"></script>
 <script language="javascript">
 <!--
 function turnback(){
-	window.location.href = window.location.href;	
+	window.location.href = window.location.href;
 }
 pwdform.wurl.focus();
 function fCheck(){
-	
+
   if( pwdform.username.value =="" ) {
       alert("\请输入用户名 !");
       pwdform.username.select();
@@ -73,21 +115,22 @@ function tCheck()
 	}
 	if(document.getElementById('email').value != "<?php echo $uEmail ?>")
 	{
-	//	alert('该邮箱地址与您真实邮箱地址不符！');
-	//	return false;
+		//alert('该邮箱地址与您真实邮箱地址不符！');
+		//return false;
 	}
   	if( pwdform.wurl.value =="" )return false;
+  	$.blockUI({ message: '<h3> 发送中...请稍等</h3>' });
 	pwdform.submit();
 	return true;
 }
 //将详细信息的具体内容写入tipDiv中
 function displayTip(content) {
-	document.getElementById('unametip').innerHTML = ''; 
-	document.getElementById('email').value = content;    
-	if(content == '用户不存在！')document.getElementById('unametip').innerHTML = content;    
+	document.getElementById('unametip').innerHTML = '';
+	document.getElementById('email').value = content;
+	if(content == '用户不存在！')document.getElementById('unametip').innerHTML = content;
 }
 function displayUrlTip(content) {
-    document.getElementById('urltip').innerHTML = content;    
+    document.getElementById('urltip').innerHTML = content;
 }
 
 //用于创建XMLHttpRequest对象

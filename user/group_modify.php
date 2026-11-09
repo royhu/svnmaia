@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("../include/charset.php");
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 
 if (!isset($_SESSION['username'])){	
@@ -40,6 +40,12 @@ function checkinput($str)
 
 $action= trim($_POST["action"]);
 if ($_SESSION['role']!='admin')exit;
+//直接打开本页时，转到组列表（默认显示所有组，可按组名排序）
+if(empty($action) and !isset($_POST['del_g']))
+{
+	echo " <script>setTimeout('document.location.href=\"./viewgroup.php?sort=name\"',0)</script>";
+	exit;
+}
 //--------------删除组
 if(isset($_POST['del_g']))
 {
@@ -72,11 +78,13 @@ if(isset($_POST['del_g']))
 	if($action == '重命名')
 	{
 	echo <<<HTML
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 		<form method="post" action="">
 		<fieldset>
 		<legend>编辑组名</legend>
 		<input type=hidden name=action value='modify'>
-		<table  cellspacing='1' cellpadding='0' width='70%' border='0' >
+		<table  cellspacing='1' cellpadding='0' width='70%' border='0' class='wraptbl'>
 		<tr><td><b>权限组名</b></td></tr>
 HTML;
 		$query="select group_id,group_name from svnauth_group where $paras";
@@ -103,12 +111,14 @@ HTML;
 			exit;	
 		}
 	echo <<<HTML
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 		<form method="post" action="">
 		<fieldset>
 		<legend>复制组</legend>
 		<input type=hidden name=action value='copygroup'>
 说明：复制组的成员或权限到目标组，如果目标组不存在则创建该组；如果目标已存在，则覆盖之。
-		<table  cellspacing='1' cellpadding='0' width='70%' border='0' >
+		<table  cellspacing='1' cellpadding='0' width='70%' border='0' class='wraptbl'>
 		<tr><th>源</th><th>目标</th></tr>
 HTML;
 		$query="select group_id,group_name from svnauth_group where $paras";

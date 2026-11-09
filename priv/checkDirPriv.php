@@ -6,7 +6,7 @@ if ($_SESSION['role'] !='admin')
 	echo "您无权进行此操作！";
 	exit;
 }
-include('../../../config.inc');
+include('../config.inc');
 include('../include/dbconnect.php');
 include('../config/config.php');
 
@@ -85,7 +85,9 @@ function checkurl($t_url)
 	return true;
 }
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../css/base.css" type="text/css">
+<link rel="stylesheet" href="../css/mobile.css" type="text/css">
 <style type='text/css'>
 .title{background: #007ED1 url(../img/bg.png)  100% 100%;font-size:11pt;color:white;}
 .subtitle{background: #007ED1;color:white;}

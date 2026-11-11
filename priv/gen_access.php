@@ -3,17 +3,21 @@
 include('../include/charset.php');
 include('../include/requireAuth.php');
 include('../config.inc');
+include_once('../include/basefunction.php');
 include('../include/dbconnect.php');
+//已开启 branches 自动同步的项目：先把 branches 下新增的子目录同步为 trunk 权限
+foreach(branchSyncRepos() as $sync_repo)
+	autoSyncNewBranchDirs($sync_repo);
 $query="select group_name,group_id from svnauth_group order by group_name";
 $result = mysql_query($query);
 $access_g='';
-while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {	
+while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$gid=$row['group_id'];
 	$gname=$row['group_name'];
-	$sql="select user_name from svnauth_groupuser,svnauth_user where svnauth_user.user_id=svnauth_groupuser.user_id and group_id=$gid and svnauth_user.fresh=0 group by user_name";
+	$sql="select user_name from svnauth_groupuser,svnauth_user where svnauth_user.user_id=svnauth_groupuser.user_id and group_id=$gid group by user_name";
 	$result_u=mysql_query($sql);
 	$user_array=array();
-	while(($result_u)and($row2=mysql_fetch_array($result_u,MYSQL_BOTH))) {	
+	while(($result_u)and($row2=mysql_fetch_array($result_u,MYSQL_BOTH))) {
 		$user=$row2['user_name'];
 		$user_array[]= "$user";
 	}
@@ -22,14 +26,14 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 
 }
 
-$query="select svnauth_user.user_name,repository,path,permission from svnauth_permission,svnauth_user where svnauth_permission.user_id=svnauth_user.user_id and svnauth_user.fresh=0 order by repository,path";
+$query="select svnauth_user.user_name,repository,path,permission from svnauth_permission,svnauth_user where svnauth_permission.user_id=svnauth_user.user_id order by repository,path";
 $result = mysql_query($query);
 $i=0;
 $repos='';
 $path='';
 $groups=array();
 $alluser=array();
-while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {	
+while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
   if(($repos == $row['repository'])and($path == $row['path']))
   {
     //----------
@@ -57,15 +61,15 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
     	  $alluser[$repos][$path]="* =\n";
     	  break;
         }
-       $group['n'][]="$user";       
+       $group['n'][]="$user";
     }
-    //----------       
+    //----------
   }else{
-    
+
     $wg=$repos.'_w';
     $rg=$repos.'_r';
     $ng=$repos.'_n';
-    
+
     if(!empty($group['w']))
     {
       $temp=implode(',',&$group['w']);
@@ -88,7 +92,7 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
     }
     if(!empty($group['n']))
     {
-      $temp=implode(',',&$group['n']); 
+      $temp=implode(',',&$group['n']);
       if(in_array($temp,$groups))
       {
     	$old_g=array_search($temp,$groups);
@@ -101,7 +105,7 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
     $repos=$row['repository'];
     $path=$row['path'];
     $dirs[$repos][$i]=$path;
-    
+
      $user=$row['user_name'];
     switch(strtolower($row['permission'])){
     case 'w':
@@ -126,17 +130,17 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
     	  $alluser[$repos][$path]="* =\n";
     	  break;
         }
-       $group['n'][]="$user";       
+       $group['n'][]="$user";
     }
     //----------
-    
+
     $i++;
   }
 }
 $wg=$repos.'_w';
     $rg=$repos.'_r';
     $ng=$repos.'_n';
-    
+
     if(!empty($group['w']))
     {
       $temp=implode(',',&$group['w']);
@@ -159,7 +163,7 @@ $wg=$repos.'_w';
     }
     if(!empty($group['n']))
     {
-      $temp=implode(',',&$group['n']); 
+      $temp=implode(',',&$group['n']);
       if(in_array($temp,$groups))
       {
     	$old_g=array_search($temp,$groups);
@@ -170,8 +174,8 @@ $wg=$repos.'_w';
 $access="[groups]\n".$access_g;
 foreach($groups as $key => $value)
 {
-  if( empty($value))continue;  
-    $access .= $key.'='.$value."\n";  
+  if( empty($value))continue;
+    $access .= $key.'='.$value."\n";
 }
 $group='';
 $group=array_keys($groups);
@@ -180,7 +184,7 @@ foreach($dirs as $key => $value)
   foreach($value as $i=>$path)
   {
     if(empty($path))
-    {  
+    {
     	$access .="\n[$key]\n";
     }else{
        $access .= "\n[$key:$path]\n";
@@ -196,12 +200,12 @@ foreach($dirs as $key => $value)
 }
 $query="select svnauth_group.group_name,repository,path,permission from svnauth_g_permission,svnauth_group where svnauth_g_permission.group_id=svnauth_group.group_id order by repository,path";
 $result = mysql_query($query);
-while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {	
+while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	$gname=$row['group_name'];
 	$priv=$row['permission'];
 	$repos=$row['repository'];
 	$path=$row['path'];
-	switch($priv) 
+	switch($priv)
 	{
 		case 'w':
 			$priv='rw';
@@ -210,19 +214,19 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 			$priv='';
 	}
     if(empty($path))
-    {  
+    {
     	$priv_dir ="\n[$repos]\n";
     }else{
        $priv_dir = "\n[$repos:$path]\n";
     }
-    $mypriv="@{$gname} = $priv \n"; 
+    $mypriv="@{$gname} = $priv \n";
     if(strpos($access,$priv_dir))
     {
 	    $access=str_replace($priv_dir,$priv_dir.$mypriv,$access);
     }else
 	    $access = $access.$priv_dir.$mypriv;
 
-	
+
 }
 //echo str_replace("\n","<br>",$access);
 
@@ -233,8 +237,8 @@ while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 			echo "权限生效成功！";
 		fclose($handle);
 		$fromurl=$_GET['fromurl'];
-		if(empty($fromurl))$fromurl='dirpriv.php';	
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href=$fromurl>返回</a>";		
-		
+		if(empty($fromurl))$fromurl='dirpriv.php';
+		//echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href=$fromurl>返回</a>";
+
 
 

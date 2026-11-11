@@ -375,6 +375,14 @@ function loadTipCallBack() {
 .es { font-size: 55%;}
 .sf,.af{text-decoration:underline;color:blue;font-size:10pt;CURSOR:pointer;}	
 .tip{display:none;width:300px;text-decoration:none;color:green;font-size:11pt;background:#FFFFCC;position:absolute;z-index:12; }
+.syncbtn{background:#d9534f;color:#fff;border:1px solid #c9302c;border-radius:4px;font-weight:bold;cursor:pointer;padding:0 14px;height:30px;font-size:10pt;vertical-align:middle;}
+.syncbtn:hover{background:#e05a56;}
+.syncbtn-on{background:#1a9c3d;color:#fff;border:1px solid #147a2f;border-radius:4px;font-weight:bold;cursor:pointer;padding:0 14px;height:30px;font-size:10pt;vertical-align:middle;}
+.syncbtn-on:hover{background:#22b34a;}
+.syncbtn-off{background:#8a8a8a;color:#fff;border:1px solid #777;border-radius:4px;font-weight:bold;cursor:pointer;padding:0 14px;height:30px;font-size:10pt;vertical-align:middle;}
+.syncbtn-off:hover{background:#9a9a9a;}
+.syncbar{display:inline-block;margin:0 8px 8px 0;vertical-align:middle;}
+.syncbar-hide{display:none;}
 </style>
 
 <body onbeforeunload="closeit(event)">
@@ -405,6 +413,27 @@ function loadTipCallBack() {
 </fieldset>
 </form>
 <h1>[Maiasvn:dir] 目录权限详情<a class='es' href='../priv/platpriv.php?p=[Maiasvn:path]&r=[Maiasvn:repos]&fromurl=[Maiasvn:fromurl]'>【递归列出】</a></h1>
+<form class='syncbar[Maiasvn:syncbranches]' method='post' action='syncbranch.php' onsubmit="return confirm('[Maiasvn:syncbranchconfirm]');">
+	<input type='hidden' name='repos' value='[Maiasvn:repos]'>
+	<input type='hidden' name='path' value='[Maiasvn:path]'>
+	<input type='hidden' name='sig' value='[Maiasvn:sig]'>
+	<input type='hidden' name='all' value='1'>
+	<input type='submit' value='[Maiasvn:syncbranchlabel]' class='[Maiasvn:syncbranchclass]'>
+</form>
+<form class='syncbar[Maiasvn:unsyncbranches]' method='post' action='syncbranch.php' onsubmit="return confirm('将取消 branches 自动同步：以后新增的分支不再自动同步 trunk 权限（已有分支的权限保持不变），确定取消吗？');">
+	<input type='hidden' name='repos' value='[Maiasvn:repos]'>
+	<input type='hidden' name='path' value='[Maiasvn:path]'>
+	<input type='hidden' name='sig' value='[Maiasvn:sig]'>
+	<input type='hidden' name='all' value='1'>
+	<input type='hidden' name='cancel' value='1'>
+	<input type='submit' value='取消自动同步' class='syncbtn-off'>
+</form>
+<form class='syncbar[Maiasvn:synctrunk]' method='post' action='syncbranch.php' onsubmit="return confirm('将把当前分支目录本身及其子目录的权限，覆盖为 trunk 对应目录的权限，确定同步吗？');">
+	<input type='hidden' name='repos' value='[Maiasvn:repos]'>
+	<input type='hidden' name='path' value='[Maiasvn:path]'>
+	<input type='hidden' name='sig' value='[Maiasvn:sig]'>
+	<input type='submit' value='同步trunk权限' class='syncbtn'>
+</form>
 
 <form name='privform' method='post' action='modifypriv.php'>
 	<fieldset>

@@ -396,9 +396,23 @@
 	#footer li {
 		margin: 0 0.6em;
 	}
-	h1,
-	h2,
-	h3 {
+	h1, h2, h3 {
 		font-size: 105%;
+	}
+	/* 同步 trunk 权限按钮：手机上与“取消自动同步”并排在同一行，点击区域更大 */
+	.syncbar {
+		display: inline-block !important;
+		width: auto !important;
+		margin: 6px 8px 0 0 !important;
+		vertical-align: top;
+	}
+	.syncbar.syncbar-hide {
+		display: none !important;
+	}
+	.syncbtn, .syncbtn-on, .syncbtn-off {
+		display: inline-block !important;
+		width: auto !important;
+		height: 42px !important;
+		margin: 0 !important;
 	}
 }

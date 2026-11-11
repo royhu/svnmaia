@@ -31,7 +31,7 @@ if (mysql_select_db(DBNAME))
 	//如果用户已过期，并且提醒次数超过3次，则删除用户，并立刻生效。
 	//$expire=mktime(0, 0, 0, date("m")  , date("d")-14, date("Y"));
 	//$expire=strftime("%Y-%m-%d",$expire);
-	$expire=date('Y-m-d' , strtotime('+2 week')); 
+	$expire=date('Y-m-d' , strtotime('+2 week'));
 	$query="delete from svnauth_user where infotimes > 2 and expire < NOW()";
 	$valuechanged=false;
 	mysql_query($query);
@@ -74,7 +74,7 @@ if (mysql_select_db(DBNAME))
 			$url
 
 			如果您已不需要，请忽略本邮件！
-			
+
 本邮件系统自动发出，回复无效。有疑问请找配管组。
 ---";
 		$subject="通知：您的svn账户即将过期！";
@@ -109,6 +109,19 @@ if (mysql_select_db(DBNAME))
 	$query="update svnauth_permission set  permission='n', expire=\"$expire\" where expire <= NOW() and permission='r' ";
 	mysql_query($query);
 	if(mysql_affected_rows()>0)$valuechanged=true;
+
+	//已开启 branches 自动同步的项目：把 branches 下新增的子目录同步为 trunk 权限
+	foreach(branchSyncRepos() as $sync_repo)
+	{
+		list($done,$failed)=autoSyncNewBranchDirs($sync_repo);
+		if($done>0)
+		{
+			$valuechanged=true;
+			touchBranchSync($sync_repo);
+			echo "<br>$sync_repo：已自动同步新增分支 $done 个";
+		}
+		if($failed>0)echo "<br>$sync_repo：有 $failed 个分支未能同步（trunk 可能没有设置权限）";
+	}
 	//生效
 	if($valuechanged)
 	{

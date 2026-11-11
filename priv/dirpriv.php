@@ -2,9 +2,9 @@
 session_start();
 include('../include/charset.php');
 error_reporting(0);
-if (!isset($_SESSION['username'])){	
+if (!isset($_SESSION['username'])){
 	echo "请先<a href='../user/loginfrm.php'>登录</a> ！";
-	echo" <script>setTimeout('document.location.href=\"../user/loginfrm.php\"',0)</script>"; 	
+	echo" <script>setTimeout('document.location.href=\"../user/loginfrm.php\"',0)</script>";
 	exit;
 }
 if(file_exists('../config/config.php'))
@@ -62,29 +62,29 @@ if(empty($repos) and ($dir=='/'))
 //将$line中的所有[Maiasvn:variable]的内容用$var替换
 function parseTags($line, $vars)
 {
- 
-   
+
+
    $l = '';
    // Replace the scmbbs variables
    while (ereg("\[Maiasvn:([a-zA-Z0-9_]+)\]", $line, $matches))
    {
       // Find beginning
       $p = strpos($line, $matches[0]);
-      
+
       // add everything up to beginning
       if ($p > 0) $l .= substr($line, 0, $p);
-      
+
       // Replace variable (special token, if not exists)
       $l .= isset($vars[$matches[1]]) ? $vars[$matches[1]] : $matches[1];
       //print_r($matches);
       // Remove allready processed part of line
       $line = substr($line, $p + strlen($matches[0]));
    }
-   
+
    // Rebuild line, add remaining part of line
    $line = $l . $line;
-   
-  
+
+
 
    // Return the results
    return $line;
@@ -118,7 +118,7 @@ $c_flag='';
 for($ii=0;$ii<20;$ii++)
 {
 	$query="select user_name,full_name,svnauth_user.user_id  from svnauth_dir_admin,svnauth_user where svnauth_dir_admin.user_id=svnauth_user.user_id and repository='$repos' and path='$subdir' order by user_name";
-	//echo $query;exit;
+//	echo $query;exit;
 	$result = mysql_query($query);
 	while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 		$uname=$row['user_name'];
@@ -149,6 +149,17 @@ if($authz)
 {
  $para=array($repos,$dir);
  $sig=keygen($para);
+ //项目已开启 branches 自动同步：首次访问某个新分支时，自动把 trunk 的权限同步过来
+ $seg=explode('/',$dir);
+ if(count($seg)>2 and $seg[1]=='branches' and branchSyncEnabled($repos))
+ {
+ 	$branch_path='/branches/'.$seg[2];
+ 	if(!pathHasPermission($repos,$branch_path))
+ 	{
+ 		syncBranchFromTrunk($repos,$branch_path,'/trunk');
+ 		touchBranchSync($repos);
+ 	}
+ }
 }
 //********************************
 //读取目录权限的用户列表详情
@@ -163,7 +174,7 @@ if(! $result)
 	exit;
 }
 $expire_arr=array();
-while($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {	
+while($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	//用户消重问题解决，权限覆盖？
 	//-------
 	$user=$row['user_name'];
@@ -194,7 +205,7 @@ foreach($cur_user as $user => $permission){
     	  $userright.= "<option value='n $user $uid'>none &nbsp; &nbsp; $user{$fn}</option>";
     	  break;
 	}
-	//给出有效期	
+	//给出有效期
 	if(!isset($expire_arr[$user]))continue;
 	$s='d_'.$uid;
 	$d=$expire_arr[$user];
@@ -206,14 +217,14 @@ while($result and (! $allflag))
 	$subdir=dirname($subdir);
 	if($subdir=='\\')$subdir='/';
 	$query="select user_name,permission from svnauth_permission,svnauth_user where svnauth_user.user_id=svnauth_permission.user_id and   repository='$repos' and path='$subdir' order by user_name";
-	//echo $query;exit;
+	//who $query;exit;
 	$s_user=array();
 	$result = mysql_query($query);
 	while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 		$user=$row['user_name'];
-		if(array_key_exists($user,$cur_user))continue;		
+		if(array_key_exists($user,$cur_user))continue;
 	        $permission=$row['permission'];
-	        if(array_key_exists($user,$s_user))	
+	        if(array_key_exists($user,$s_user))
 	  		if($permission < $s_user[$user])continue;
 		$s_user[$user]=$permission;
 		if($user=='*'){$allflag=true;$br_dir=$subdir;}
@@ -244,7 +255,7 @@ foreach($d_user as $user=>$permission)
     		  $userright.= "<option value='n $user $uid c'>none &nbsp; &nbsp; $user{$fn}</option>";
     		  break;
     		}
-	
+
 }
 //if(!$allflag)$candidate="<option value='n *'>none &nbsp; &nbsp; *(所有用户)</option>";
 $candidate_array=array_diff_key($candidate_array,$d_user,$cur_user);
@@ -261,9 +272,8 @@ foreach($candidate_array as $user => $v)
 //读取用户组权限
 //**********************
 $query="select group_name,permission from svnauth_g_permission,svnauth_group where svnauth_group.group_id=svnauth_g_permission.group_id and repository='$repos' and path='$dir' order by group_name";
-//echo $query;exit;
 $result = mysql_query($query);
-while($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {	
+while($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 	//消重问题解决，权限覆盖？
 	//-------
 	$group=$row['group_name'];
@@ -312,9 +322,9 @@ while($result and ($subdir != $br_dir))
 	$result = mysql_query($query);
 	while (($result)and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 		$group=$row['group_name'];
-		if(array_key_exists($group,$cur_group))continue;		
+		if(array_key_exists($group,$cur_group))continue;
 	        $permission=$row['permission'];
-	        if(array_key_exists($group,$s_group))	
+	        if(array_key_exists($group,$s_group))
 	  		if($permission < $s_group[$group])continue;
 		$s_group[$group]=$permission;
 	}
@@ -341,7 +351,7 @@ foreach($d_group as $group=>$permission)
     		  $groupright.= "<option value='n $group $gid c'>none &nbsp; &nbsp; $group(继承)</option>";
     		  break;
     		}
-	
+
 }
 $g_candidate_array=array_diff_key($g_candidate_array,$d_group,$cur_group);
 foreach($g_candidate_array as $group => $v)
@@ -367,6 +377,12 @@ if($result and($row= mysql_fetch_array($result, MYSQL_BOTH))) {
 $newtopf=array();
 $handle = fopen("../template/showdir.htm", "r");
 $fromurl="../priv/dirpriv.php?d=$repos{$dir}";
+$synctrunk=' syncbar-hide';
+$syncbranches=' syncbar-hide';
+$syncbranchclass='syncbtn';
+$syncbranchlabel='自动同步trunk权限';
+$syncbranchconfirm='将把 branches 下所有分支目录（含目录本身）的权限，覆盖为 trunk 对应目录的权限，并开启自动同步（以后新增的分支也会自动同步），确定执行吗？';
+$unsyncbranches=' syncbar-hide';
 if(! $authz)
 {
 	$repos='scmbbs.com';
@@ -376,11 +392,32 @@ if(! $authz)
 	$candidate='';
 	$dexpire='';
 }
-$vars=array('dir' => $firstdir,'dirprive' => $userright,'g_dirprive' => $groupright,'g_candidate' => $g_candidate,'candidate' => $candidate,'diradmin' => $diradmin,'repos' => $repos,'path' => $dir,'sig' => $sig,'authz' => $showbutton,'dexpire' => $dexpire,'fromurl' => $fromurl,'description' => $des);  
+else
+{
+	//当前目录是项目的 branches 目录时，提供“自动同步trunk权限”按钮
+	if(basename($dir)=='branches')
+	{
+		$syncbranches='';
+		//已开启自动同步：按钮变绿并加“已”，同时提供取消按钮
+		if(branchSyncEnabled($repos))
+		{
+			$syncbranchclass='syncbtn-on';
+			$syncbranchlabel='自动同步trunk权限中';
+			$syncbranchconfirm='将重新把 branches 下所有分支目录（含目录本身）的权限，覆盖为 trunk 对应目录的权限（自动同步已开启），确定执行吗？';
+			$unsyncbranches='';
+		}
+	}
+	//当前目录的上一级是 branches 时，提供单个分支的同步按钮
+	$pdir=dirname($dir);
+	if($pdir=='\\')$pdir='/';
+	if(basename($pdir)=='branches')$synctrunk='';
+}
+$vars=array('dir' => $firstdir,'dirprive' => $userright,'g_dirprive' => $groupright,'g_candidate' => $g_candidate,'candidate' => $candidate,'diradmin' => $diradmin,'repos' => $repos,'path' => $dir,'sig' => $sig,'authz' => $showbutton,'dexpire' => $dexpire,'fromurl' => $fromurl,'description' => $des,'synctrunk' => $synctrunk,'syncbranches' => $syncbranches,'syncbranchclass' => $syncbranchclass,'syncbranchlabel' => $syncbranchlabel,'syncbranchconfirm' => $syncbranchconfirm,'unsyncbranches' => $unsyncbranches);
+
 while (!feof($handle))
 {
       $line = fgets($handle);
-      echo parseTags($line, $vars);	 
+      echo parseTags($line, $vars);
 }
 fclose($handle);
 

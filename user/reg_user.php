@@ -230,24 +230,90 @@ function regeneratePassword()
 	regform.passwd0.value=pwd;
 }
 
-//复制内容到剪切板
-function copyToClipboard(content)
+//复制内容到剪切板；iOS Safari 在异步回调中不允许写剪贴板，
+//失败时回调 done(false)，由调用方展示手动复制面板
+function copyToClipboard(content,done)
 {
+	done=done||function(){};
+	var ta=document.createElement("textarea");
+	ta.value=content;
+	//iOS 上 readonly 的 textarea 无法被 select()，因此不加 readonly
+	var top=(window.pageYOffset||document.documentElement.scrollTop||0);
+	ta.style.cssText="position:absolute;left:0;top:"+top+"px;width:1px;height:1px;padding:0;border:none;outline:none;opacity:0;font-size:16px;";
+	document.body.appendChild(ta);
 	var ok=false;
 	try{
-		var ta=document.createElement("textarea");
-		ta.value=content;
-		ta.style.position="fixed";
-		ta.style.left="-9999px";
-		document.body.appendChild(ta);
+		ta.focus();
 		ta.select();
+		try{ta.setSelectionRange(0,content.length);}catch(e){}
 		ok=document.execCommand("copy");
-		document.body.removeChild(ta);
 	}catch(e){ok=false;}
-	if(!ok&&navigator.clipboard&&navigator.clipboard.writeText)
+	document.body.removeChild(ta);
+	if(ok){done(true);return;}
+	if(navigator.clipboard&&navigator.clipboard.writeText)
 	{
-		navigator.clipboard.writeText(content);
+		try{
+			var p=navigator.clipboard.writeText(content);
+			if(p&&p.then){p.then(function(){done(true);},function(){done(false);});return;}
+			done(true);return;
+		}catch(e){}
 	}
+	done(false);
+}
+
+//手动复制面板：iPhone 上自动复制失败时，让用户点一下按钮（属于用户手势）再复制
+function showCopyPanel(content,title)
+{
+	var old=document.getElementById("copypanel");
+	if(old&&old.parentNode)old.parentNode.removeChild(old);
+	var box=document.createElement("div");
+	box.id="copypanel";
+	box.style.cssText="position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:99999;";
+	var inner=document.createElement("div");
+	inner.style.cssText="position:absolute;left:5%;right:5%;top:15%;background:#fff;border-radius:8px;padding:14px;";
+	var head=document.createElement("div");
+	head.style.cssText="font-size:16px;font-weight:bold;color:#1a9c3d;margin-bottom:6px;";
+	head.innerHTML=title?title:"账号信息";
+	var tip=document.createElement("div");
+	tip.style.cssText="font-size:15px;line-height:1.5;margin-bottom:8px;color:#333;";
+	tip.innerHTML="iOS 不允许自动写入剪切板，请点“复制”按钮，或长按文本框选择“拷贝”。";
+	var ta=document.createElement("textarea");
+	ta.value=content;
+	ta.style.cssText="width:100%;height:80px;font-size:16px;box-sizing:border-box;padding:6px;";
+	inner.appendChild(head);
+	inner.appendChild(tip);
+	inner.appendChild(ta);
+	var wrap=document.createElement("div");
+	wrap.style.cssText="margin-top:10px;text-align:center;";
+	var btnCopy=document.createElement("button");
+	btnCopy.type="button";
+	btnCopy.innerHTML="复制";
+	btnCopy.style.cssText="min-height:42px;min-width:110px;font-size:16px;margin:0 6px;";
+	btnCopy.onclick=function(){
+		ta.focus();
+		ta.select();
+		try{ta.setSelectionRange(0,content.length);}catch(e){}
+		var done=false;
+		try{done=document.execCommand("copy");}catch(e){done=false;}
+		if(!done&&navigator.clipboard&&navigator.clipboard.writeText)
+		{
+			try{navigator.clipboard.writeText(content);done=true;}catch(e){done=false;}
+		}
+		alert(done?"已复制到剪切板":"复制失败，请长按文本框选择“拷贝”");
+	};
+	var btnClose=document.createElement("button");
+	btnClose.type="button";
+	btnClose.innerHTML="关闭";
+	btnClose.style.cssText="min-height:42px;min-width:90px;font-size:16px;margin:0 6px;";
+	btnClose.onclick=function(){if(box.parentNode)box.parentNode.removeChild(box);};
+	wrap.appendChild(btnCopy);
+	wrap.appendChild(btnClose);
+	inner.appendChild(wrap);
+	box.appendChild(inner);
+	document.body.appendChild(box);
+	ta.focus();
+	ta.select();
+	try{ta.setSelectionRange(0,content.length);}catch(e){}
 }
  function fCheck(){
  		 
@@ -343,8 +409,15 @@ function loadTipCallBack() {
         if(tip=="用户注册成功！")
         {
             var content="hi, svn 账号：\n"+regform.username.value+"\n"+regform.passwd.value;
-            copyToClipboard(content);
-            alert(tip+"\n账号信息已复制到剪切板：\n"+content);
+            copyToClipboard(content,function(ok){
+                if(ok)
+                {
+                    alert(tip+"\n账号信息已复制到剪切板：\n"+content);
+                }else
+                {
+                    showCopyPanel(content,"用户注册成功！");
+                }
+            });
             regform.reset();
             regeneratePassword();
             resetGroups();

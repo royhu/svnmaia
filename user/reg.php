@@ -87,6 +87,11 @@ if (mysql_num_rows($result) > 0){
 			mysql_query($gquery,$mlink);
 		}
 		updateGroupLastUsed($gids);
+		//有添加权限组时，重新生成 access 权限控制文件
+		$scheme=true;
+		ob_start();
+		@include('../priv/gen_access.php');
+		ob_end_clean();
 	}
 	$username=escapeshellarg($username);
 	$passwd0=escapeshellarg($passwd0);

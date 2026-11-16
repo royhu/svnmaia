@@ -413,7 +413,7 @@ SCMBBS;
 }
 if(isset($_GET['gid']) )exit;
 $mineflag=isset($_GET['mine']);
-$sort=(isset($_GET['sort']) and $_GET['sort']=='used')?'used':'name';
+$sort=(isset($_GET['sort']) and $_GET['sort']=='name')?'name':'used';
 if($sort=='used')
 	$orderby=(ensureGroupLastUsedField())?"max(last_used) desc, group_name asc":"group_name asc";
 else

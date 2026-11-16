@@ -52,6 +52,11 @@ if (mysql_select_db(DBNAME))
 		$query="delete from svnauth_permission where $paras";
 		$result=mysql_query($query);
 		@include('./gen_passwd.php');
+		//删除用户后，重新生成 access 权限控制文件
+		$scheme=true;
+		ob_start();
+		@include('../priv/gen_access.php');
+		ob_end_clean();
 		//带原搜索关键字返回用户查询页，重新搜索一遍
 		$kw=isset($_GET['kw'])?$_GET['kw']:(isset($_POST['kw'])?$_POST['kw']:'');
 		if($kw!='')
